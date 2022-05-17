@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Game : MonoBehaviour
 {
@@ -121,4 +123,45 @@ public class Game : MonoBehaviour
         return true;
     }
     // Update is called once per frame
+
+    public string GetCurrentPlayer()
+    {
+        return currentPlayer;
+    }
+
+    public bool IsGameOver()
+    {
+        return gameOver; // verifica daca s-a realizat mat sau nu
+    }
+
+    public void NextTurn()
+    {
+        if (currentPlayer == "white") 
+        {
+            currentPlayer = "black";
+        }
+        else
+        {
+            currentPlayer = "white";
+        }
+        // schimbam randul jucatorilor
+    }
+
+    public void Update()
+    {
+        if (gameOver == true && Input.GetMouseButtonDown(0))
+        {
+            gameOver = false;
+            SceneManager.LoadScene("Game");
+        }
+    }
+
+    public void Winner(string playerWinner)
+    {
+        gameOver = true;
+        GameObject.FindGameObjectWithTag("WinnerText").GetComponent<Text>().enabled = true;
+        GameObject.FindGameObjectWithTag("WinnerText").GetComponent<Text>().text = playerWinner + " has won the match!";
+
+        GameObject.FindGameObjectWithTag("RestartText").GetComponent<Text>().enabled = true;
+    }
 }

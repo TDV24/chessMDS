@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Chessman : MonoBehaviour
 {
     // need more references
@@ -40,8 +41,7 @@ public class Chessman : MonoBehaviour
             case "blackBishop": this.GetComponent<SpriteRenderer>().sprite = blackBishop; player = "black"; break;
             case "blackKing": this.GetComponent<SpriteRenderer>().sprite = blackKing; player = "black"; break;
             case "blackRook": this.GetComponent<SpriteRenderer>().sprite = blackRook; player = "black"; break;
-            case "blackPawn": this.GetComponent<SpriteRenderer>().sprite = blackPawn; player = "black";
-                break;
+            case "blackPawn": this.GetComponent<SpriteRenderer>().sprite = blackPawn; player = "black"; break;
 
             case "whiteQueen": this.GetComponent<SpriteRenderer>().sprite = whiteQueen; player = "white";  break;
             case "whiteKnight": this.GetComponent<SpriteRenderer>().sprite = whiteKnight; player = "white"; break;
@@ -92,9 +92,12 @@ public class Chessman : MonoBehaviour
 
     private void OnMouseUp()
     {
-        DestroyMovePlates();
+        if (!controller.GetComponent<Game>().IsGameOver() && controller.GetComponent<Game>().GetCurrentPlayer() == player)
+        {
+            DestroyMovePlates();
 
-        InitiateMovePlates();
+            InitiateMovePlates();
+        }
     }
 
     public void DestroyMovePlates()
