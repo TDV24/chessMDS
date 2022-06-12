@@ -152,11 +152,15 @@ public class Chessman : MonoBehaviour
                 break;
 
             case "blackPawn":
-                PawnMovePlate(xBoard, yBoard - 1);
+                if(yBoard == 6)
+                    PawnMovePlate(xBoard, yBoard - 2, 2);
+                PawnMovePlate(xBoard, yBoard - 1, 0);
                 break;
 
             case "whitePawn":
-                PawnMovePlate(xBoard, yBoard + 1);
+                if(yBoard == 1)
+                    PawnMovePlate(xBoard, yBoard + 2, 1);
+                PawnMovePlate(xBoard, yBoard + 1, 0);
                 break;
 
 
@@ -216,21 +220,20 @@ public class Chessman : MonoBehaviour
 
         if(sc.PositionOnBoard(x, y))
         {
-            GameObject cp = sc.GetPosition(x, y);
 
-            if (cp == null)
+            if (sc.GetPosition(x, y) == null)
             {
                 MovePlateSpawn(x, y);
             }
 
-            else if(cp.GetComponent<Chessman>().player != player)
+            else if(sc.GetPosition(x, y).GetComponent<Chessman>().player != player)
             {
                 MovePlateAttackSpawn(x, y);
             }
         }
     }
 
-    public void PawnMovePlate(int x, int y)
+    public void PawnMovePlate(int x, int y, int FirstMove)
     {
         Game sc = controller.GetComponent<Game>();
         if(sc.PositionOnBoard(x, y))
@@ -242,16 +245,29 @@ public class Chessman : MonoBehaviour
 
             if (sc.PositionOnBoard(x + 1, y) && 
                 sc.GetPosition(x + 1, y) != null && 
-                sc.GetPosition(x + 1, y).GetComponent<Chessman>().player != player)
+                sc.GetPosition(x + 1, y).GetComponent<Chessman>().player != player && FirstMove == 0)
             {
                 MovePlateAttackSpawn(x + 1, y);
             }
 
             if (sc.PositionOnBoard(x - 1, y) &&
                 sc.GetPosition(x - 1, y) != null &&
-                sc.GetPosition(x - 1, y).GetComponent<Chessman>().player != player)
+                sc.GetPosition(x - 1, y).GetComponent<Chessman>().player != player && FirstMove == 0)
             {
                 MovePlateAttackSpawn(x - 1, y);
+            }
+        }
+        if(FirstMove > 0)
+        {
+            if(sc.PositionOnBoard(x, y))
+            {
+                int dif = 1;
+                if(FirstMove == 2)
+                    dif = -1;
+                if(sc.GetPosition(x, y) == null && sc.GetPosition(x, y - dif) == null)
+                {
+                    MovePlateSpawn(x, y);
+                }
             }
         }
     }
