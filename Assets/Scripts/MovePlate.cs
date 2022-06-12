@@ -40,7 +40,7 @@ public class MovePlate : MonoBehaviour
 
         controller.GetComponent<Game>().SetPositionEmpty(
             reference.GetComponent<Chessman>().GetXBoard(),
-            reference.GetComponent<Chessman>().GetXBoard()); // pozitia trebuie sa fie goala dupa ce mutam piesa de sah
+            reference.GetComponent<Chessman>().GetYBoard()); // pozitia trebuie sa fie goala dupa ce mutam piesa de sah
 
         reference.GetComponent<Chessman>().SetXBoard(matrixX);
         reference.GetComponent<Chessman>().SetYBoard(matrixY);
