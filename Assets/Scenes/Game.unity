@@ -204,7 +204,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.103773594, g: 0.103773594, b: 0.103773594, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -591,6 +591,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2139073114}
   - component: {fileID: 2139073113}
+  - component: {fileID: 2139073115}
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
@@ -665,3 +666,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2139073115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2139073112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7da12e3f981078b4ab7737fd6b859205, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 2139073113}
+  sprite1: {fileID: 21300000, guid: 3f5293b23de12e640ad143842ac0dbbe, type: 3}
+  sprite2: {fileID: 21300000, guid: fd1e281d5a73202419bbc778e49e5905, type: 3}
+  sprite3: {fileID: 21300000, guid: 9d1df9da62f6d33469e65437b1a453a4, type: 3}
