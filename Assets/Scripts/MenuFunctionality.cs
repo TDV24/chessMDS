@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MenuFunctionality : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    
-    public GameObject otherGameObject;
 
+    public GameObject otherGameObject;
     private string textDescription;
     private ModificatorDeScene modificatorDeScene;
 
@@ -17,11 +17,14 @@ public class MenuFunctionality : MonoBehaviour, IPointerEnterHandler, IPointerEx
     void Awake()
     {
         modificatorDeScene = GetComponent<ModificatorDeScene>();
+
     }
 
     void Start()
     {
         GetComponent<Text>().color = new Color(255, 255, 255);
+        otherGameObject = GameObject.Find("DropdownTheme");
+        
     }
 
     void OnMouseOver()
@@ -71,7 +74,25 @@ public class MenuFunctionality : MonoBehaviour, IPointerEnterHandler, IPointerEx
             case "Options":
 
                 Debug.Log("See the options of the game!");
+                modificatorDeScene.LoadScene("Options");
+                break;
 
+
+            case "Back":
+                if (otherGameObject == null)
+                {
+                    Debug.Log("MORT");
+                }
+
+                else
+                {
+                    int value = otherGameObject.GetComponent<Dropdown>().value + 1;
+                    Debug.Log("O sa salvez valoarea:" + value);
+
+                    PlayerPrefs.SetInt("tema", value);
+                    modificatorDeScene.LoadScene("Menu");
+                }
+                
                 break;
 
             case "Quit":
