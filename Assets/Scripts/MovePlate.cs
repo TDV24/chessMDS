@@ -6,6 +6,7 @@ public class MovePlate : MonoBehaviour
 {
     // Start is called before the first frame update
     public GameObject controller;
+    public GameObject piecesTaken;
 
     GameObject reference = null; // cand apesi pe o piesa de sah, se genereaza movePlate ul, dar tre sa ai o referinta catre obiectul pe care ai apasat
 
@@ -19,7 +20,7 @@ public class MovePlate : MonoBehaviour
     {
         if(attack)
         {
-            // schimbi in rosu
+            // schimbi in negru
             gameObject.GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.0f, 0.0f, 1.0f);
         }
     }
@@ -27,9 +28,12 @@ public class MovePlate : MonoBehaviour
     public void OnMouseUp()
     {
         controller = GameObject.FindGameObjectWithTag("GameController");
-        if(attack)
+        piecesTaken = GameObject.FindGameObjectWithTag("Canvas");
+        if (attack)
         {
             GameObject cp = controller.GetComponent<Game>().GetPosition(matrixX, matrixY);
+            if (cp.name != "")
+                piecesTaken.GetComponent<PiecesTaken>().TextWritePiecesTaken(cp.name);
             //stabilim daca piesa luata este regele(testam functia de win)
             if (cp.name == "whiteKing")
                 controller.GetComponent<Game>().Winner("Black");
