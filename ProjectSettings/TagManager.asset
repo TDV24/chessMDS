@@ -7,6 +7,9 @@ TagManager:
   - MovePlate
   - WinnerText
   - RestartText
+  - TimerBlack
+  - TimerWhite
+  - Canvas
   layers:
   - Default
   - TransparentFX

@@ -8,6 +8,7 @@ public class Game : MonoBehaviour
 {
     // create a new attribute for the chess Piece object
     public GameObject chesspiece;
+    public GameObject controller;
 
     // pozitii pentru fiecare piesa
     private GameObject[,] positions = new GameObject[8, 8]; //8 pe 8 din cauza ca tabla de sah e 8 pe 8
@@ -19,7 +20,6 @@ public class Game : MonoBehaviour
     private string currentPlayer = "white";
 
     private bool gameOver = false;
-
 
     // Start is called before the first frame update
     void Start()
@@ -139,10 +139,14 @@ public class Game : MonoBehaviour
         if (currentPlayer == "white") 
         {
             currentPlayer = "black";
+            controller = GameObject.FindGameObjectWithTag("Canvas");
+            controller.GetComponent<Timer>().StartBlack();
         }
         else
         {
             currentPlayer = "white";
+            controller = GameObject.FindGameObjectWithTag("Canvas");
+            controller.GetComponent<Timer>().StartWhite();
         }
         // schimbam randul jucatorilor
     }
@@ -152,7 +156,7 @@ public class Game : MonoBehaviour
         if (gameOver == true && Input.GetMouseButtonDown(0))
         {
             gameOver = false;
-            SceneManager.LoadScene("Game");
+            SceneManager.LoadScene("Menu");
         }
     }
 
