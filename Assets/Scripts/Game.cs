@@ -168,4 +168,48 @@ public class Game : MonoBehaviour
 
         GameObject.FindGameObjectWithTag("RestartText").GetComponent<Text>().enabled = true;
     }
+
+    public char[,] getBoard()
+    {
+        var TempBoard = new char[10, 10]; 
+        for(int i = 0; i <= 7; ++i)
+        {
+            for(int j = 0; j <= 7; ++j)
+            {
+                GameObject obj = GetPosition(i, j);
+                if (obj == null) {
+                    // Debug.Log("itemul de pe pozitia"+ i + " " + j + " este null"); // null pentru ca trebuie sa apesi pixel perfect
+                    Debug.Log(".");
+                    TempBoard[i, j] = '.';
+                } 
+                else {
+                    string nume = obj.name;
+                    Debug.Log(nume);
+                    if(obj.name == "whitePawn")
+                        TempBoard[i, j] = 'P';
+                    if(obj.name == "blackPawn")
+                        TempBoard[i, j] = 'p';
+                    if(obj.name == "whiteKnight")
+                        TempBoard[i, j] = 'N';
+                    if(obj.name == "blackKnight")
+                        TempBoard[i, j] = 'n';
+                    if(obj.name == "whiteBishop")
+                        TempBoard[i, j] = 'B';
+                    if(obj.name == "blackBishop")
+                        TempBoard[i, j] = 'b';
+                    if(obj.name == "whiteQueen")
+                        TempBoard[i, j] = 'Q';
+                    if(obj.name == "blackQueen")
+                        TempBoard[i, j] = 'q';
+                    if(obj.name == "whiteKing")
+                        TempBoard[i, j] = 'K';
+                    if(obj.name == "blackKing")
+                        TempBoard[i, j] = 'k';
+                }
+                
+                
+            }
+        }
+        return TempBoard;
+    }
 }
