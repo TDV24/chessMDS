@@ -10,13 +10,11 @@ public class PiecesTaken : MonoBehaviour
     int blackKnights = 0;
     int blackBishops = 0;
     int blackQueen = 0;
-    int blackKing = 0; 
     int whitePawns = 0;
     int whiteRooks = 0;
     int whiteKnights = 0;
     int whiteBishops = 0;
     int whiteQueen = 0;
-    int whiteKing = 0;
     public Text BlackPiecesTaken;
     public Text WhitePiecesTaken;
     // Start is called before the first frame update
@@ -27,13 +25,11 @@ public class PiecesTaken : MonoBehaviour
         blackKnights = 0;
         blackBishops = 0;
         blackQueen = 0;
-        blackKing = 0;
         whitePawns = 0;
         whiteRooks = 0;
         whiteKnights = 0;
         whiteBishops = 0;
         whiteQueen = 0;
-        whiteKing = 0;
     }
 
     // Update is called once per frame
@@ -49,8 +45,6 @@ public class PiecesTaken : MonoBehaviour
             blackBishops++;
         else if (PieceName == "blackQueen")
             blackQueen++;
-        else if (PieceName == "blackKing")
-            blackKing++;
         else if (PieceName == "whitePawn")
             whitePawns++;
         else if (PieceName == "whiteRook")
@@ -61,11 +55,9 @@ public class PiecesTaken : MonoBehaviour
             whiteBishops++;
         else if (PieceName == "whiteQueen")
             whiteQueen++;
-        else if (PieceName == "whiteKing")
-            whiteKing++;
         BlackPiecesTaken.text = "Black Pieces Taken\n\n" + "Pawns: " + blackPawns.ToString() + "\nRooks: " + blackRooks.ToString() + "\nKnights: " + blackKnights.ToString() + "\nBishops: " +
-            blackBishops.ToString() + "\nQueen: " + blackQueen.ToString() + "\nKing: " + blackKing.ToString(); // afisam piesele luate de alb
+            blackBishops.ToString() + "\nQueen: " + blackQueen.ToString(); // afisam piesele luate de alb
         WhitePiecesTaken.text = "White Pieces Taken\n\n" + "Pawns: " + whitePawns.ToString() + "\nRooks: " + whiteRooks.ToString() + "\nKnights: " + whiteKnights.ToString() + "\nBishops: " +
-            whiteBishops.ToString() + "\nQueen: " + whiteQueen.ToString() + "\nKing: " + whiteKing.ToString(); // afisam piesele luate de negru
+            whiteBishops.ToString() + "\nQueen: " + whiteQueen.ToString(); // afisam piesele luate de negru
     }
 }
