@@ -1,4 +1,5 @@
 using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -111,64 +112,225 @@ public class Chessman : MonoBehaviour
 
     public void InitiateMovePlates()
     {
+        controller = GameObject.FindGameObjectWithTag("GameController");
+
+        Game sc = controller.GetComponent<Game>();
+
+        var board = new char[10, 10]; // aici vreau sa tin codificarile la piese
+
+        board = controller.GetComponent<Game>().getBoard();
+
         switch(this.name)
         {
             case "blackQueen":
             case "whiteQueen":
-                LineMovePlate(1, 0); // creeaza o linie de movePlates pentru toate cazurile
-                LineMovePlate(0, 1);
-                LineMovePlate(1, 1);
-                LineMovePlate(-1, 0);
-                LineMovePlate(0, -1);
-                LineMovePlate(-1, -1);
-                LineMovePlate(-1, 1);
-                LineMovePlate(1, -1);
+                LineMovePlate(1, 0, board); // creeaza o linie de movePlates pentru toate cazurile
+                LineMovePlate(0, 1, board);
+                LineMovePlate(1, 1, board);
+                LineMovePlate(-1, 0, board);
+                LineMovePlate(0, -1, board);
+                LineMovePlate(-1, -1, board);
+                LineMovePlate(-1, 1, board);
+                LineMovePlate(1, -1, board);
                 break;
 
             case "blackKnight":
             case "whiteKnight":
-                LMovePlate();       // management la mersul in forma de L
+                LMovePlate(board);       // management la mersul in forma de L
                 break;
 
             case "blackBishop":
             case "whiteBishop":
-                LineMovePlate(1, 1);
-                LineMovePlate(1, -1);
-                LineMovePlate(-1, 1);
-                LineMovePlate(-1, -1);
+                LineMovePlate(1, 1, board);
+                LineMovePlate(1, -1, board);
+                LineMovePlate(-1, 1, board);
+                LineMovePlate(-1, -1, board);
                 break;
 
             case "blackKing":
             case "whiteKing":
-                SurroundMovePlate();
+                SurroundMovePlate(board);
                 break;
 
             case "blackRook":
             case "whiteRook":
-                LineMovePlate(1, 0);
-                LineMovePlate(-1, 0);
-                LineMovePlate(0, 1);
-                LineMovePlate(0, -1);
+                LineMovePlate(1, 0, board);
+                LineMovePlate(-1, 0, board);
+                LineMovePlate(0, 1, board);
+                LineMovePlate(0, -1, board);
                 break;
 
             case "blackPawn":
                 if(yBoard == 6)
-                    PawnMovePlate(xBoard, yBoard - 2, 2);
-                PawnMovePlate(xBoard, yBoard - 1, 0);
+                    PawnMovePlate(xBoard, yBoard - 2, 2, board);
+                PawnMovePlate(xBoard, yBoard - 1, 0, board);
                 break;
 
             case "whitePawn":
                 if(yBoard == 1)
-                    PawnMovePlate(xBoard, yBoard + 2, 1);
-                PawnMovePlate(xBoard, yBoard + 1, 0);
+                    PawnMovePlate(xBoard, yBoard + 2, 1, board);
+                PawnMovePlate(xBoard, yBoard + 1, 0, board);
                 break;
 
 
         }
     }
 
-    public void LineMovePlate(int xIncrement, int yIncrement)
+    public int IsInCheck(char [,] board , int player)
     {
+        // if player is white, I will check whether the white king is attacked by any black pieces and opposite
+        // uppercase = white, lowercase = black
+        int xKing = 0, yKing = 0;
+        for(int i = 0; i <= 7; ++i)
+        {
+            for(int j = 0; j <= 7; ++j)
+            {
+                if(board[i, j] == 'K' && player == 0)
+                {
+                    xKing = i;
+                    yKing = j;
+                }
+                if(board[i, j] == 'k' && player == 1)	
+                {
+                    xKing = i;
+                    yKing = j;
+                }
+            }
+        }
+        
+        // king check (invalid in normal chess though)
+        
+        for(int xDif = -1; xDif <= 1; ++xDif)
+        {
+            for(int yDif = -1; yDif <= 1; ++yDif)
+            {
+                int copyX = xKing + xDif;
+                int copyY = yKing + yDif;
+                if(copyX >= 0 && copyX <= 7 && copyY >= 0 && copyY <= 7)
+                {
+                    if(player == 0 && board[copyX, copyY] == 'k')
+                        return 1;
+                    if(player == 1 && board[copyX, copyY] == 'K')
+                        return 1;
+                }
+            }
+        }
+        
+        // pawn check
+        
+        if(player == 0) // white
+        {
+            if(xKing > 0 && yKing < 7 && board[xKing - 1, yKing + 1] == 'p')
+                return 1;
+            if(xKing < 7 && yKing < 7 && board[xKing + 1, yKing + 1] == 'p')
+                return 1;
+        }
+        if(player == 1) // black
+        {
+            if(xKing > 0 && yKing > 0 && board[xKing - 1, yKing - 1] == 'P')
+                return 1;
+            if(xKing < 7 && yKing > 0 && board[xKing + 1, yKing - 1] == 'P')
+                return 1;
+        }
+        
+        // bishop check + queen diagonal check
+        
+        for(int xDif = -1; xDif <= 1; xDif += 2)
+        {
+            for(int yDif = -1; yDif <= 1; yDif += 2)
+            {
+                int copyX = xKing + xDif;
+                int copyY = yKing + yDif;
+                while(copyX >= 0 && copyX <= 7 && copyY >= 0 && copyY <= 7 && board[copyX, copyY] == '.')
+                {
+                    copyX += xDif;
+                    copyY += yDif;
+                }
+                if(copyX >= 0 && copyX <= 7 && copyY >= 0 && copyY <= 7)
+                {
+                    if(player == 0)
+                    {
+                        if(board[copyX, copyY] == 'b' || board[copyX, copyY] == 'q')
+                        {
+                            return 1;
+                        }
+                    }
+                    else
+                    {
+                        if(board[copyX, copyY] == 'B' || board[copyX, copyY] == 'Q')
+                        {
+                            return 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        // rook check + queen line check
+        
+        for(int xDif = -1; xDif <= 1; xDif++)
+        {
+            for(int yDif = -1; yDif <= 1; yDif++)
+            {
+                if((xDif == 0 || yDif == 0) && xDif + yDif != 0)
+                {
+                    int copyX = xKing + xDif;
+                    int copyY = yKing + yDif;
+                    while(copyX >= 0 && copyX <= 7 && copyY >= 0 && copyY <= 7 && board[copyX, copyY] == '.')
+                    {
+                        copyX += xDif;
+                        copyY += yDif;
+                    }
+                    if(copyX >= 0 && copyX <= 7 && copyY >= 0 && copyY <= 7)
+                    {
+                        if(player == 0)
+                        {
+                            if(board[copyX, copyY] == 'r' || board[copyX, copyY] == 'q')
+                            {
+                                return 1;
+                            }
+                        }
+                        else
+                        {
+                            if(board[copyX, copyY] == 'R' || board[copyX, copyY] == 'Q')
+                            {
+                                return 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // knight check
+        
+        for(int xDif = -2; xDif <= 2; ++xDif)
+        {
+            for(int yDif = -2; yDif <= 2; ++yDif)
+            {
+                int sum = Math.Abs(xDif) + Math.Abs(yDif);
+                if(sum == 3)
+                {
+                    int copyX = xKing + xDif;
+                    int copyY = yKing + yDif;
+                    if(copyX >= 0 && copyX <= 7 && copyY >= 0 && copyY <= 7)
+                    {
+                        if(player == 0 && board[copyX, copyY] == 'n')
+                            return 1;
+                        if(player == 1 && board[copyX, copyY] == 'N')
+                            return 1;
+                    }
+                }
+            }
+        }
+        
+        return 0;
+        
+    }
+
+    public void LineMovePlate(int xIncrement, int yIncrement, char [,] board)
+    {
+
         Game sc = controller.GetComponent<Game>();
 
         int x = xBoard + xIncrement;
@@ -176,7 +338,19 @@ public class Chessman : MonoBehaviour
 
         while(sc.PositionOnBoard(x, y) && sc.GetPosition(x, y) == null)
         {
-            MovePlateSpawn(x, y);
+            var good = 1;
+            var pcs = board[xBoard, yBoard];
+            var turn = 1;
+            board[xBoard, yBoard] = '.';
+            board[x, y] = pcs;
+            if(Char.IsUpper(pcs) == true)
+                turn = 0;
+            if(IsInCheck(board, turn) == 1)
+                good = 0;
+            board[x, y] = '.';
+            board[xBoard, yBoard] = pcs;
+            if(good == 1)
+                MovePlateSpawn(x, y);
             x += xIncrement;
             y += yIncrement;
 
@@ -185,36 +359,49 @@ public class Chessman : MonoBehaviour
         if (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y).GetComponent<Chessman>().player != player)
         {
             // daca nu e egal inseamna ca putem sa atacam
-            MovePlateAttackSpawn(x, y);
+            var good = 1;
+            var pcs = board[xBoard, yBoard];
+            var turn = 1;
+            var oldpiece = board[x, y];
+            board[xBoard, yBoard] = '.';
+            board[x, y] = pcs;
+            if(Char.IsUpper(pcs) == true)
+                turn = 0;
+            if(IsInCheck(board, turn) == 1)
+                good = 0;
+            board[x, y] = oldpiece;
+            board[xBoard, yBoard] = pcs;
+            if(good == 1)
+                 MovePlateAttackSpawn(x, y);
         }
     }
 
-    public void LMovePlate()
+    public void LMovePlate(char [,] board)
     {
-        PointMovePlate(xBoard + 1, yBoard + 2); // pt ca forma de L are +1 si +2
-        PointMovePlate(xBoard - 1, yBoard + 2);
-        PointMovePlate(xBoard + 2, yBoard + 1);
-        PointMovePlate(xBoard + 2, yBoard - 1);
-        PointMovePlate(xBoard + 1, yBoard - 2);
-        PointMovePlate(xBoard - 1, yBoard - 2);
-        PointMovePlate(xBoard - 2, yBoard + 1);
-        PointMovePlate(xBoard - 2, yBoard - 1);
+        PointMovePlate(xBoard + 1, yBoard + 2, board); // pt ca forma de L are +1 si +2
+        PointMovePlate(xBoard - 1, yBoard + 2, board);
+        PointMovePlate(xBoard + 2, yBoard + 1, board);
+        PointMovePlate(xBoard + 2, yBoard - 1, board);
+        PointMovePlate(xBoard + 1, yBoard - 2, board);
+        PointMovePlate(xBoard - 1, yBoard - 2, board);
+        PointMovePlate(xBoard - 2, yBoard + 1, board);
+        PointMovePlate(xBoard - 2, yBoard - 1, board);
     }
 
-    public void SurroundMovePlate()
+    public void SurroundMovePlate(char [,] board)
     {
-        PointMovePlate(xBoard, yBoard + 1);
-        PointMovePlate(xBoard, yBoard - 1);
-        PointMovePlate(xBoard - 1, yBoard - 1);
-        PointMovePlate(xBoard - 1, yBoard - 0);
-        PointMovePlate(xBoard - 1, yBoard + 1);
-        PointMovePlate(xBoard + 1, yBoard - 1);
-        PointMovePlate(xBoard + 1, yBoard - 0);
-        PointMovePlate(xBoard + 1, yBoard + 1);
+        PointMovePlate(xBoard, yBoard + 1, board);
+        PointMovePlate(xBoard, yBoard - 1, board);
+        PointMovePlate(xBoard - 1, yBoard - 1, board);
+        PointMovePlate(xBoard - 1, yBoard - 0, board);
+        PointMovePlate(xBoard - 1, yBoard + 1, board);
+        PointMovePlate(xBoard + 1, yBoard - 1, board);
+        PointMovePlate(xBoard + 1, yBoard - 0, board);
+        PointMovePlate(xBoard + 1, yBoard + 1, board);
 
     }
 
-    public void PointMovePlate(int x, int y)
+    public void PointMovePlate(int x, int y, char [,] board)
     {
         Game sc = controller.GetComponent<Game>();
 
@@ -223,51 +410,129 @@ public class Chessman : MonoBehaviour
 
             if (sc.GetPosition(x, y) == null)
             {
-                MovePlateSpawn(x, y);
+                var good = 1;
+                var pcs = board[xBoard, yBoard];
+                var turn = 1;
+                board[xBoard, yBoard] = '.';
+                board[x, y] = pcs;
+                if(Char.IsUpper(pcs) == true)
+                    turn = 0;
+                if(IsInCheck(board, turn) == 1)
+                    good = 0;
+                board[x, y] = '.';
+                board[xBoard, yBoard] = pcs;
+                if(good == 1)
+                    MovePlateSpawn(x, y);
             }
 
             else if(sc.GetPosition(x, y).GetComponent<Chessman>().player != player)
             {
-                MovePlateAttackSpawn(x, y);
+                var good = 1;
+                var pcs = board[xBoard, yBoard];
+                var turn = 1;
+                var oldpiece = board[x, y];
+                board[xBoard, yBoard] = '.';
+                board[x, y] = pcs;
+                if(Char.IsUpper(pcs) == true)
+                    turn = 0;
+                if(IsInCheck(board, turn) == 1)
+                    good = 0;
+                board[x, y] = oldpiece;
+                board[xBoard, yBoard] = pcs;
+                if(good == 1)
+                    MovePlateAttackSpawn(x, y);
             }
         }
     }
 
-    public void PawnMovePlate(int x, int y, int FirstMove)
+    public void PawnMovePlate(int x, int y, int FirstMove, char [,] board)
     {
         Game sc = controller.GetComponent<Game>();
         if(sc.PositionOnBoard(x, y))
         {
             if(sc.GetPosition(x, y) == null )
             {
-                MovePlateSpawn(x, y);
+                var good = 1;
+                var pcs = board[xBoard, yBoard];
+                var turn = 1;
+                board[xBoard, yBoard] = '.';
+                board[x, y] = pcs;
+                if(Char.IsUpper(pcs) == true)
+                    turn = 0;
+                if(IsInCheck(board, turn) == 1)
+                    good = 0;
+                board[x, y] = '.';
+                board[xBoard, yBoard] = pcs;
+                if(good == 1)
+                    MovePlateSpawn(x, y);
             }
 
             if (sc.PositionOnBoard(x + 1, y) && 
                 sc.GetPosition(x + 1, y) != null && 
                 sc.GetPosition(x + 1, y).GetComponent<Chessman>().player != player && FirstMove == 0)
             {
-                MovePlateAttackSpawn(x + 1, y);
+                var good = 1;
+                var pcs = board[xBoard, yBoard];
+                var turn = 1;
+                var oldpiece = board[x, y];
+                board[xBoard, yBoard] = '.';
+                board[x, y] = pcs;
+                if(Char.IsUpper(pcs) == true)
+                    turn = 0;
+                if(IsInCheck(board, turn) == 1)
+                    good = 0;
+                board[x, y] = oldpiece;
+                board[xBoard, yBoard] = pcs;
+                if(good == 1)
+                    MovePlateAttackSpawn(x + 1, y);
             }
 
             if (sc.PositionOnBoard(x - 1, y) &&
                 sc.GetPosition(x - 1, y) != null &&
                 sc.GetPosition(x - 1, y).GetComponent<Chessman>().player != player && FirstMove == 0)
             {
-                MovePlateAttackSpawn(x - 1, y);
+                var good = 1;
+                var pcs = board[xBoard, yBoard];
+                var turn = 1;
+                var oldpiece = board[x, y];
+                board[xBoard, yBoard] = '.';
+                board[x, y] = pcs;
+                if(Char.IsUpper(pcs) == true)
+                    turn = 0;
+                if(IsInCheck(board, turn) == 1)
+                    good = 0;
+                board[x, y] = oldpiece;
+                board[xBoard, yBoard] = pcs;
+                if(good == 1)
+                    MovePlateAttackSpawn(x - 1, y);
             }
-        }
-        if(FirstMove > 0)
-        {
-            if(sc.PositionOnBoard(x, y))
+            if(FirstMove > 0)
             {
-                int dif = 1;
-                if(FirstMove == 2)
-                    dif = -1;
-                if(sc.GetPosition(x, y) == null && sc.GetPosition(x, y - dif) == null)
-                {
-                    MovePlateSpawn(x, y);
-                }
+                    int dif = 1;
+                    if(FirstMove == 2)
+                        dif = -1;
+                    // null pentru ca trebuie sa apesi pixel perfect
+                    if(sc.GetPosition(x, y) == null && sc.GetPosition(x, y - dif) == null)
+                    {
+                        Debug.Log("itemul de pe pozitia"+ x + " " + (y - dif) + " este null");
+                        Debug.Log(sc.GetPosition(x, y - dif));
+                        if(sc.GetPosition(x, y - dif) == null)
+                            Debug.Log("itemul de pe pozitia"+ x + " " + y + " este null");
+                        var good = 1;
+                        var pcs = board[xBoard, yBoard];
+                        var turn = 1;
+                        var oldpiece = board[x, y];
+                        board[xBoard, yBoard] = '.';
+                        board[x, y] = pcs;
+                        if(Char.IsUpper(pcs) == true)
+                            turn = 0;
+                        if(IsInCheck(board, turn) == 1)
+                            good = 0;
+                        board[x, y] = oldpiece;
+                        board[xBoard, yBoard] = pcs;
+                        if(good == 1)
+                            MovePlateSpawn(x, y);
+                    }
             }
         }
     }
