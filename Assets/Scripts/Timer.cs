@@ -10,6 +10,8 @@ public class Timer : MonoBehaviour
     bool ActiveWhite = true;
     float currentTimeBlack;
     float currentTimeWhite;
+    float curTimeBlack;
+    float curTimeWhite;
     public int MinutesBlack;
     public int MinutesWhite;
     public Text CurrentTimeBlackText;
@@ -19,6 +21,8 @@ public class Timer : MonoBehaviour
     {
         currentTimeBlack = MinutesBlack * 60;
         currentTimeWhite = MinutesWhite * 60;
+        curTimeBlack = MinutesBlack * 60;
+        curTimeWhite = MinutesWhite * 60;
     }
 
     // Update is called once per frame
@@ -44,6 +48,18 @@ public class Timer : MonoBehaviour
             currentTimeBlack = 0;
             controller.GetComponent<Game>().Winner("White");
         }
+        if (curTimeWhite - currentTimeWhite > 60)
+        {
+            controller = GameObject.FindGameObjectWithTag("GameController");
+            currentTimeWhite = 0;
+            controller.GetComponent<Game>().Winner("Black");
+        }
+        if (curTimeBlack - currentTimeBlack > 60)
+        {
+            controller = GameObject.FindGameObjectWithTag("GameController");
+            currentTimeBlack = 0;
+            controller.GetComponent<Game>().Winner("White");
+        }
         TimeSpan timeBlack = TimeSpan.FromSeconds(currentTimeBlack);
         TimeSpan timeWhite = TimeSpan.FromSeconds(currentTimeWhite);
         CurrentTimeBlackText.text = timeBlack.Minutes.ToString() + ":" + timeBlack.Seconds.ToString();
@@ -52,12 +68,14 @@ public class Timer : MonoBehaviour
 
     public void StartWhite()
     {
-        ActiveWhite = true;  
+        ActiveWhite = true;
+        curTimeBlack = currentTimeBlack;
     }
     
     public void StartBlack()
     {
         ActiveWhite = false;
+        curTimeWhite = currentTimeWhite;
     }
 
 }
